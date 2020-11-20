@@ -10,8 +10,12 @@ type Config struct {
 }
 
 func LoadConfig(filename string) (*Config, error) {
+	
 	file, err := ioutil.ReadFile(filename)
 	if err != nil {
-
+		return nil, err
 	}
+
+	
+	
 }
