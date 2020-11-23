@@ -15,7 +15,8 @@ go run cmd/cryptocurrency/cryptocurrency.go -config ./config/config.yaml
 | GET           | localhost:8080/cryptocurrency     |
 | GET           | localhost:8080/cryptocurrency/:id |
 | POST          | localhost:8080/cryptocurrency/    |
-| UPDATE        | localhost:8080/cryptocurrency/    |
+| PUT           | localhost:8080/cryptocurrency/    |
+| DELETE        | localhost:8080/cryptocurrency/:id |
 
 #### Post body parameters
 
@@ -23,5 +24,15 @@ go run cmd/cryptocurrency/cryptocurrency.go -config ./config/config.yaml
 {
   "type": "Bitcoin",
   "quantity": 12
+}
+```
+
+#### Put body parameters
+
+```
+{
+  "ID": 1
+  "type": "Bitcoin",
+  "quantity": 18
 }
 ```
