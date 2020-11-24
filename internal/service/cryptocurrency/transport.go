@@ -56,18 +56,22 @@ func makeEndpoints(s Service) []*endpoint {
 		},
 )
 
-
-
 	return list
 }
 
 
 func getAll(s Service) gin.HandlerFunc {
 	return func (c *gin.Context) {
-		result, _ := s.FindAll()
-		c.JSON(http.StatusOK, gin.H {
-			"cryptocurrency": result,
-		})
+		result, err := s.FindAll()
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H {
+				"cryptocurrency": err,
+			})
+		}else {
+			c.JSON(http.StatusOK, gin.H{
+				"cryptocurrency": result,
+			})
+		}
 	}
 }
 
@@ -75,32 +79,50 @@ func getCryptocurrencyById(s Service) gin.HandlerFunc {
 
 	return func(c *gin.Context) {
 		ID, _ := strconv.Atoi(c.Param("id"))
-		result, _ := s.FindByID(ID)
-		c.JSON(http.StatusOK, gin.H {
-			"cryptocurrency": result,
-		})
-	}
-	
-}
+		result, err := s.FindByID(ID)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H {
+				"cryptocurrency": err,
+			})
+		}else {
+			c.JSON(http.StatusOK, gin.H{
+				"cryptocurrency": result,
+			})
+		}
+	}	
+}		
+
 
 func addCryptocurrency(s Service) gin.HandlerFunc {
 	var cryptocurrency Cryptocurrency
 	return func(c *gin.Context) {
 		c.BindJSON(&cryptocurrency)
-		result, _ := s.AddCryptocurrency(cryptocurrency)
-		c.JSON(http.StatusOK, gin.H{
-			"cryptocurrency": result,
-		})
+		result, err := s.AddCryptocurrency(cryptocurrency)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H {
+				"cryptocurrency": err,
+			})
+		}else {
+			c.JSON(http.StatusOK, gin.H{
+				"cryptocurrency": result,
+			})
+		}
 	}
 }
 
 func deleteCryptocurrency(s Service) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		ID, _ := strconv.Atoi(c.Param("id"))
-		result, _ := s.RemoveByID(ID)
-		c.JSON(http.StatusOK, gin.H {
-			"cryptocurrency": result,
-		})
+		result, err := s.RemoveByID(ID)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H {
+				"cryptocurrency": err,
+			})
+		}else {
+			c.JSON(http.StatusOK, gin.H{
+				"cryptocurrency": result,
+			})
+		}
 	}
 }
 
@@ -116,9 +138,15 @@ func updateCryptocurrency(s Service) gin.HandlerFunc {
 	var cryptocurrency Cryptocurrency
 	return func(c *gin.Context) {
 		c.BindJSON(&cryptocurrency)
-		result, _ := s.updateCryptocurrency(cryptocurrency)
-		c.JSON(http.StatusOK, gin.H{
-			"cryptocurrency": result,
-		})
+		result, err := s.updateCryptocurrency(cryptocurrency)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H {
+				"cryptocurrency": err,
+			})
+		}else {
+			c.JSON(http.StatusOK, gin.H{
+				"cryptocurrency": result,
+			})
+		}
 	}
 }

@@ -3,6 +3,7 @@ package cryptocurrency
 import (
 	"github.com/jmoiron/sqlx"
 	"github.com/seminarioGo/internal/config"
+	"fmt"
 )
 
 //Cryptocurrency structure
@@ -13,10 +14,10 @@ type Cryptocurrency struct {
 }
 
 type Service interface {
-	AddCryptocurrency(Cryptocurrency) (string,error)
+	AddCryptocurrency(Cryptocurrency) (Cryptocurrency,error)
 	FindAll() ([]*Cryptocurrency, error)
-	updateCryptocurrency(Cryptocurrency) (string,error)
-	RemoveByID(int) (string,error)
+	updateCryptocurrency(Cryptocurrency) (bool,error)
+	RemoveByID(int) (bool,error)
 	FindByID(int) (*Cryptocurrency, error)
 } 
 
@@ -29,16 +30,19 @@ func New(db *sqlx.DB,c *config.Config) (Service, error){
 	return service{db,c}, nil
 }
 
-func (s service) AddCryptocurrency(c Cryptocurrency) (string,error) {
+func (s service) AddCryptocurrency(c Cryptocurrency) (Cryptocurrency,error) {
 	
 	sqlStatement := "INSERT INTO cryptocurrency (type, quantity) VALUES (?,?)"
 	
-	_, err := s.db.Exec(sqlStatement, c.Type, c.Quantity)
+	res, err := s.db.Exec(sqlStatement, c.Type, c.Quantity)
 	if err != nil {
-		return "Error al insertar Cryptocurrency",err
+		return c,err
 	}
 
-	return "Se inserto correctamente",nil
+	c.ID,_ = res.LastInsertId()
+	fmt.Println(res.LastInsertId())
+
+	return c,nil
 }
 
 func (s service) FindByID(ID int) (*Cryptocurrency, error) {
@@ -70,26 +74,26 @@ func (s service) FindAll() ([]*Cryptocurrency, error) {
 }
 
 
-func (s service) RemoveByID(ID int) (string,error) {
+func (s service) RemoveByID(ID int) (bool,error) {
 
 	sqlStatement := "DELETE FROM cryptocurrency WHERE ID = ?"
 	_,err := s.db.Exec(sqlStatement, ID) 
 	if err != nil {
-		return "Error al eliminar el registro", err
+		return false, err
 	}
 
-	return "Se elimino correctamente el registro", nil
+	return true, nil
 
 }
 
-func (s service) updateCryptocurrency(c Cryptocurrency) (string,error) {
+func (s service) updateCryptocurrency(c Cryptocurrency) (bool,error) {
 	
 	sqlStatement := "UPDATE cryptocurrency SET Type = ?, Quantity = ? WHERE ID = ?"
 	
 	_, err := s.db.Exec(sqlStatement, c.Type, c.Quantity,c.ID)
 	if err != nil {
-		return "Error al actualizar Cryptocurrency",err
+		return false,err
 	}
 
-	return "Se actualizo correctamente",nil
+	return true,nil
 }

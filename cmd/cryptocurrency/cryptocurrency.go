@@ -58,7 +58,6 @@ func createSchema(db *sqlx.DB) error {
 		quantity integer
 		);`
 
-	// execute a query on the server
 	_, err := db.Exec(schema)
 	if err != nil {
 		return err
